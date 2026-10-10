@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Huellitas de Cabungos - Adopción de mascotas</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            border-radius: 0 !important;
+        }
+
+        body {
+            background-color: #FAF9F6;
+            color: #2B2B2B;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.7;
+            padding: 20px;
+        }
+
+        header {
+            border-bottom: 2px solid #2B2B2B;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #0D0D0D;
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #7A7067;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-banner {
+            width: 100%;
+            height: 420px; /* Aumentamos un poco la altura para que se aprecie mejor */
+            object-fit: cover;
+            object-position: center 30%; /* Centra mejor el rostro en la toma */
+            border: 1px solid #E5E0DA;
+            margin-bottom: 30px;
+        }
+
+        .context-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .pill {
+            background-color: #D95D39;
+            color: #FFFFFF;
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Estilos de la barra de búsqueda */
+        .search-container {
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+            border: 1px solid #E5E0DA;
+            background-color: #FFFFFF;
+            color: #2B2B2B;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: #D95D39;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #E5E0DA;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+            border-color: #D95D39;
+        }
+
+        .card-number {
+            font-size: 0.85rem;
+            color: #7A7067;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0D0D0D;
+            margin-bottom: 12px;
+        }
+
+        .card-info {
+            font-size: 0.95rem;
+            color: #4A453F;
+            margin-bottom: 20px;
+        }
+
+        .card-info p {
+            margin-bottom: 8px;
+        }
+
+        .btn-adopt {
+            display: inline-block;
+            background-color: #0D0D0D;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+
+        .btn-adopt:hover {
+            background-color: #D95D39;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #7A7067;
+            font-size: 1.1rem;
+            background-color: #FFFFFF;
+            border: 1px solid #E5E0DA;
+        }
+
+        /* Fotos */
+        .card-photo { width: 100%; height: 220px; object-fit: cover; border: 1px solid #E5E0DA; margin-bottom: 18px; display: block; }
+        .sin-foto { display: flex; align-items: center; justify-content: center; background: #F1EDE8; color: #7A7067; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        button.btn-adopt { border: none; cursor: pointer; font-family: inherit; }
+
+        /* Formulario de adopción */
+        .modal { position: fixed; inset: 0; background: rgba(13,13,13,0.6); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+        .modal[hidden] { display: none; }
+        .modal-box { background: #FFFFFF; border: 1px solid #E5E0DA; padding: 28px; width: 100%; max-width: 460px; max-height: 90vh; overflow: auto; }
+        .modal-box h2 { font-size: 1.3rem; margin-bottom: 6px; }
+        .modal-box p.nota { font-size: 0.9rem; color: #4A453F; }
+        .modal-box label { display: block; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 4px; }
+        .modal-box input, .modal-box textarea { width: 100%; padding: 10px 12px; border: 1px solid #E5E0DA; font: inherit; outline: none; }
+        .modal-box input:focus, .modal-box textarea:focus { border-color: #D95D39; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-sec { background: #FFFFFF; color: #0D0D0D; border: 1px solid #0D0D0D !important; }
+        .btn-sec:hover { color: #FFFFFF; }
+        .form-msg { margin-top: 14px; font-size: 0.9rem; }
+        .form-msg.error { color: #B3261E; }
+        .form-msg.ok { color: #2E6B3A; }
+
+        /* Filtros */
+        .filtros { background: #FFFFFF; border: 1px solid #E5E0DA; padding: 16px; margin-bottom: 30px; display: grid; gap: 12px; }
+        .filtros-fila { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+        .filtros select, .filtros input[type="number"] { padding: 10px 12px; border: 1px solid #E5E0DA; font: inherit; background: #fff; width: 100%; outline: none; }
+        .filtros select:focus, .filtros input:focus { border-color: #D95D39; }
+        .checks { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.9rem; }
+        .checks label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .btn-link { background: none; border: none; color: #D95D39; font: inherit; font-weight: 700; cursor: pointer; text-decoration: underline; justify-self: start; }
+        .contador { font-size: 0.85rem; color: #7A7067; margin-bottom: 14px; }
+        .publica { font-size: 0.9rem; margin-bottom: 30px; }
+        .publica a { color: #D95D39; font-weight: 700; }
+
+        /* Tarjetas de mascotas */
+        .card-number { text-transform: capitalize; }
+        .badges { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+        .badge { background: #EAF3EC; color: #2E6B3A; font-size: 0.72rem; font-weight: 700; padding: 3px 8px; text-transform: uppercase; letter-spacing: 0.3px; }
+        details.mas { margin-bottom: 18px; font-size: 0.9rem; color: #4A453F; border-top: 1px solid #E5E0DA; padding-top: 10px; }
+        details.mas summary { cursor: pointer; font-weight: 700; color: #0D0D0D; }
+        details.mas p, details.mas ul { margin-top: 8px; }
+        details.mas ul { padding-left: 18px; }
+        details.mas .nota { font-size: 0.78rem; color: #7A7067; font-style: italic; }
+        .modal-box label.check { display: flex; gap: 8px; align-items: flex-start; text-transform: none; font-weight: 400; letter-spacing: 0; font-size: 0.85rem; }
+        .modal-box label.check input { width: auto; margin-top: 4px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>HUELLITAS DE CABUNGOS</h1>
+        <div class="subtitle">Adopción responsable &bull; Refugios y veterinarias</div>
+    </header>
+
+    <img src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=1200&q=80" alt="Rescate animal Riohacha" class="hero-banner">
+
+    <div class="context-bar">
+        <span class="pill">Adopción responsable</span>
+        <span class="pill">Refugios y veterinarias</span>
+    </div>
+
+    <!-- Búsqueda y filtros -->
+    <div class="filtros">
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, raza, personalidad o refugio...">
+        <div class="filtros-fila">
+            <select id="fEspecie" aria-label="Especie">
+                <option value="">Todas las especies</option>
+                <option value="perro">Perros</option>
+                <option value="gato">Gatos</option>
+                <option value="otro">Otros</option>
+            </select>
+            <select id="fSexo" aria-label="Sexo">
+                <option value="">Macho o hembra</option>
+                <option value="macho">Macho</option>
+                <option value="hembra">Hembra</option>
+            </select>
+            <select id="fTamano" aria-label="Tamaño">
+                <option value="">Cualquier tamaño</option>
+                <option value="pequeño">Pequeño (menos de 10 kg)</option>
+                <option value="mediano">Mediano (10 a 25 kg)</option>
+                <option value="grande">Grande (más de 25 kg)</option>
+            </select>
+            <select id="fCiudad" aria-label="Ciudad"><option value="">Todas las ciudades</option></select>
+            <input type="number" id="fPesoMin" min="0" step="0.5" placeholder="Peso mín. (kg)" aria-label="Peso mínimo">
+            <input type="number" id="fPesoMax" min="0" step="0.5" placeholder="Peso máx. (kg)" aria-label="Peso máximo">
+        </div>
+        <div class="checks">
+            <label><input type="checkbox" id="fVacunas"> Vacunas al día</label>
+            <label><input type="checkbox" id="fSano"> Buen estado de salud</label>
+            <label><input type="checkbox" id="fEsteril"> Esterilizado/a</label>
+            <label><input type="checkbox" id="fNinos"> Bueno con niños</label>
+        </div>
+        <button type="button" class="btn-link" id="btnLimpiar">Limpiar filtros</button>
+    </div>
+    <p class="publica">¿Eres refugio o veterinaria? <a href="/panel.html">Publica tus mascotas en adopción &rarr;</a></p>
+    <p class="contador" id="contador"></p>
+
+
+    <!-- Contenedor de las Tarjetas -->
+    <div class="grid-container" id="perritos-grid">
+        <!-- Los datos se cargarán aquí -->
+    </div>
+
+    <!-- Formulario de adopción -->
+    <div class="modal" id="modal" hidden>
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitulo">
+            <h2 id="modalTitulo">Adoptar a <span id="modalPerro"></span></h2>
+            <p class="nota">Déjanos tus datos y quien publica la mascota te contactará.</p>
+            <form id="formAdopcion">
+                <input type="hidden" id="perroId">
+                <label for="fNombre">Tu nombre</label>
+                <input id="fNombre" required minlength="2" maxlength="100" autocomplete="name">
+                <label for="fTelefono">Teléfono / WhatsApp</label>
+                <input id="fTelefono" type="tel" required minlength="7" maxlength="20" autocomplete="tel">
+                <label for="fCorreo">Correo (opcional)</label>
+                <input id="fCorreo" type="email" maxlength="120" autocomplete="email">
+                <label for="fMensaje">¿Por qué quieres adoptar? ¿Cumples los requisitos? (opcional)</label>
+                <textarea id="fMensaje" rows="3" maxlength="1000"></textarea>
+                <label class="check"><input type="checkbox" id="fConsent" required> Autorizo que mis datos se compartan con quien publica esta mascota para contactarme sobre la adopción.</label>
+                <div class="modal-actions">
+                    <button type="submit" class="btn-adopt" id="btnEnviar">Enviar solicitud</button>
+                    <button type="button" class="btn-adopt btn-sec" id="btnCerrar">Cerrar</button>
+                </div>
+                <p class="form-msg" id="formMsg"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const $ = (id) => document.getElementById(id);
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const triTxt = (v) => (v === true ? 'Sí' : v === false ? 'No' : 'Sin dato');
+
+        function insignias(m) {
+            const b = [];
+            if (m.vacunasAlDia === true) b.push('Vacunas al día');
+            if (m.sano === true) b.push('Buen estado de salud');
+            if (m.esterilizado === true) b.push('Esterilizado/a');
+            if (m.desparasitado === true) b.push('Desparasitado/a');
+            return b.length ? `<div class="badges">${b.map(t => `<span class="badge">${t}</span>`).join('')}</div>` : '';
+        }
+
+        function tarjeta(m) {
+            const reqs = (m.requisitos || []).length
+                ? `<ul>${m.requisitos.map(r => `<li>${esc(r)}</li>`).join('')}</ul>`
+                : '<p>Consulta los requisitos directamente con quien publica.</p>';
+            return `
+            <div class="card">
+                <div>
+                    ${m.foto
+                        ? `<img class="card-photo" src="${esc(m.foto)}" alt="Foto de ${esc(m.nombre)}" loading="lazy">`
+                        : `<div class="card-photo sin-foto">Foto próximamente</div>`}
+                    <div class="card-number">${esc(m.especie)} · ${esc(m.sexo)}${m.edad ? ' · ' + esc(m.edad) : ''}</div>
+                    <div class="card-title">${esc(m.nombre)}</div>
+                    <div class="card-info">
+                        <p><strong>Raza:</strong> ${esc(m.raza)}</p>
+                        <p><strong>Peso:</strong> ${esc(m.peso || 'Sin dato')}${m.tamano ? ' (' + esc(m.tamano) + ')' : ''}</p>
+                        <p><strong>Publica:</strong> ${esc(m.refugio)} · ${esc(m.ciudad)}</p>
+                        <p><strong>Personalidad:</strong> ${esc(m.personalidad)}</p>
+                    </div>
+                    ${insignias(m)}
+                    <details class="mas">
+                        <summary>Salud, convivencia y requisitos</summary>
+                        <p><strong>Vacunas:</strong> ${esc(m.vacunasDetalle || triTxt(m.vacunasAlDia))}</p>
+                        <p><strong>Condiciones de salud:</strong> ${esc(m.condicionesSalud || 'Ninguna indicada')}</p>
+                        <p><strong>Convive bien con:</strong> niños (${triTxt(m.buenoConNinos)}), perros (${triTxt(m.buenoConPerros)}), gatos (${triTxt(m.buenoConGatos)})</p>
+                        <p><strong>Requisitos de adopción:</strong></p>
+                        ${reqs}
+                        <p class="nota">Información declarada por quien publica la mascota.</p>
+                    </details>
+                </div>
+                <button type="button" class="btn-adopt" data-id="${esc(m.id)}" data-nombre="${esc(m.nombre)}">Iniciar adopción &rarr;</button>
+            </div>`;
+        }
+
+        async function cargar() {
+            const p = new URLSearchParams();
+            const campos = { q: 'searchInput', especie: 'fEspecie', sexo: 'fSexo', tamano: 'fTamano', ciudad: 'fCiudad', pesoMin: 'fPesoMin', pesoMax: 'fPesoMax' };
+            for (const [k, id] of Object.entries(campos)) if ($(id).value.trim()) p.set(k, $(id).value.trim());
+            for (const [k, id] of [['vacunas', 'fVacunas'], ['sano', 'fSano'], ['esterilizado', 'fEsteril'], ['ninos', 'fNinos']])
+                if ($(id).checked) p.set(k, '1');
+            const grid = $('perritos-grid');
+            try {
+                const r = await fetch('/api/mascotas?' + p);
+                const lista = await r.json();
+                $('contador').textContent = lista.length === 1 ? '1 mascota disponible' : `${lista.length} mascotas disponibles`;
+                grid.innerHTML = lista.length ? lista.map(tarjeta).join('') : `
+                    <div class="no-results">
+                        <p style="margin-bottom: 12px; font-weight: 700; color: #0D0D0D;">No encontramos mascotas con esos filtros</p>
+                        <p style="margin-bottom: 20px; font-size: 0.9rem;">Prueba quitando algún filtro, o vuelve pronto: se publican mascotas nuevas.</p>
+                        <button type="button" class="btn-adopt" id="btnLimpiar2">Limpiar filtros</button>
+                    </div>`;
+            } catch (e) {
+                grid.innerHTML = '<div class="no-results">No se pudo cargar la lista. Intenta de nuevo en unos minutos.</div>';
+            }
+        }
+
+        async function cargarCiudades() {
+            try {
+                const ciudades = await (await fetch('/api/ciudades')).json();
+                $('fCiudad').innerHTML = '<option value="">Todas las ciudades</option>' +
+                    ciudades.map(c => `<option>${esc(c)}</option>`).join('');
+            } catch (e) { /* los filtros siguen funcionando sin la lista */ }
+        }
+
+        let espera;
+        const recargar = () => { clearTimeout(espera); espera = setTimeout(cargar, 250); };
+        ['searchInput', 'fPesoMin', 'fPesoMax'].forEach(id => $(id).addEventListener('input', recargar));
+        ['fEspecie', 'fSexo', 'fTamano', 'fCiudad', 'fVacunas', 'fSano', 'fEsteril', 'fNinos']
+            .forEach(id => $(id).addEventListener('change', cargar));
+        const limpiar = () => {
+            document.querySelectorAll('.filtros input, .filtros select').forEach(el => {
+                if (el.type === 'checkbox') el.checked = false; else el.value = '';
+            });
+            cargar();
+        };
+        $('btnLimpiar').addEventListener('click', limpiar);
+
+        // ----- Formulario de adopción -----
+        const modal = $('modal'), form = $('formAdopcion'), msg = $('formMsg'), btnEnviar = $('btnEnviar');
+        const mostrarMsg = (t, tipo) => { msg.textContent = t; msg.className = 'form-msg ' + tipo; };
+        const cerrarModal = () => { modal.hidden = true; };
+
+        $('perritos-grid').addEventListener('click', (e) => {
+            if (e.target.id === 'btnLimpiar2') return limpiar();
+            const btn = e.target.closest('button[data-id]');
+            if (!btn) return;
+            form.reset();
+            msg.textContent = '';
+            btnEnviar.disabled = false;
+            $('perroId').value = btn.dataset.id;
+            $('modalPerro').textContent = btn.dataset.nombre;
+            modal.hidden = false;
+            $('fNombre').focus();
+        });
+        $('btnCerrar').addEventListener('click', cerrarModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) cerrarModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarModal(); });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btnEnviar.disabled = true;
+            mostrarMsg('Enviando...', '');
+            try {
+                const r = await fetch('/api/solicitudes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        mascota_id: $('perroId').value,
+                        nombre: $('fNombre').value,
+                        telefono: $('fTelefono').value,
+                        correo: $('fCorreo').value,
+                        mensaje: $('fMensaje').value,
+                        consentimiento: $('fConsent').checked
+                    })
+                });
+                const datos = await r.json();
+                if (!r.ok) throw new Error(datos.error || 'No se pudo enviar');
+                mostrarMsg('¡Gracias! Recibimos tu solicitud. Quien publica la mascota se pondrá en contacto contigo.', 'ok');
+            } catch (err) {
+                mostrarMsg(err.message, 'error');
+                btnEnviar.disabled = false;
+            }
+        });
+
+        cargarCiudades();
+        cargar();
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Administración · Huellitas de Cabungos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+        body { background: #FAF9F6; color: #2B2B2B; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        header { border-bottom: 2px solid #2B2B2B; padding-bottom: 12px; margin-bottom: 24px; }
+        h1 { font-size: 1.4rem; font-weight: 800; }
+        h2 { font-size: 1.05rem; margin: 30px 0 12px; text-transform: uppercase; letter-spacing: 1px; }
+        input, select { padding: 9px 11px; border: 1px solid #E5E0DA; font: inherit; background: #fff; outline: none; }
+        button { background: #0D0D0D; color: #fff; border: none; padding: 9px 14px; font: inherit; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        button:hover { background: #D95D39; }
+        button.sec { background: #fff; color: #0D0D0D; border: 1px solid #0D0D0D; }
+        button.sec:hover { background: #0D0D0D; color: #fff; }
+        .fila { background: #fff; border: 1px solid #E5E0DA; padding: 14px; margin-bottom: 10px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+        .fila .info { flex: 1 1 260px; }
+        .fila img, .fila .ph { width: 60px; height: 60px; object-fit: cover; background: #F1EDE8; border: 1px solid #E5E0DA; }
+        .meta { font-size: 0.85rem; color: #7A7067; }
+        .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+        .msg { margin-top: 10px; font-size: 0.9rem; color: #B3261E; }
+        a { color: #D95D39; font-weight: 700; }
+        .tag { display: inline-block; padding: 1px 8px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; background: #F1EDE8; }
+        .tag.pendiente { background: #FFF4D6; } .tag.aprobada { background: #EAF3EC; } .tag.suspendida { background: #FBE3E1; }
+    </style>
+</head>
+<body>
+    <header><h1>ADMINISTRACIÓN · HUELLITAS DE CABUNGOS</h1></header>
+
+    <section id="login">
+        <input type="password" id="clave" placeholder="Clave de administrador">
+        <button id="entrar">Entrar</button>
+        <p class="msg" id="loginMsg"></p>
+    </section>
+
+    <main id="panel" hidden>
+        <button class="sec" id="salir">Cerrar sesión</button>
+
+        <h2>Organizaciones</h2>
+        <div id="organizaciones"></div>
+
+        <h2>Todas las mascotas</h2>
+        <div id="mascotas"></div>
+
+        <h2>Todas las solicitudes</h2>
+        <div id="solicitudes"></div>
+        <p class="msg" id="panelMsg"></p>
+    </main>
+
+    <script>
+        const $ = (s) => document.querySelector(s);
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const ESTADOS = ['pendiente', 'contactado', 'aprobada', 'rechazada'];
+        const ESTADOS_ORG = ['pendiente', 'aprobada', 'suspendida'];
+        let clave = sessionStorage.getItem('clave') || '';
+
+        async function api(url, opts = {}) {
+            const r = await fetch(url, { ...opts, headers: { ...(opts.headers || {}), 'x-admin-key': clave } });
+            if (r.status === 204) return null;
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok) throw new Error(d.error || 'Error ' + r.status);
+            return d;
+        }
+        const waLink = (t) => { const d = t.replace(/\D/g, ''); return 'https://wa.me/' + (d.length === 10 ? '57' + d : d); };
+
+        async function cargar() {
+            const [orgs, masc, sol] = await Promise.all([
+                api('/api/admin/organizaciones'), api('/api/admin/mascotas'), api('/api/admin/solicitudes')]);
+
+            $('#organizaciones').innerHTML = orgs.length ? orgs.map(o => `
+                <div class="fila">
+                    <div class="info">
+                        <strong>${esc(o.nombre)}</strong> <span class="tag ${o.estado}">${o.estado}</span>
+                        <div class="meta">${esc(o.tipo)} · ${esc(o.ciudad)} · ${esc(o.correo)} · <a href="${waLink(o.telefono)}" target="_blank" rel="noopener">${esc(o.telefono)}</a></div>
+                        ${o.direccion ? `<div class="meta">${esc(o.direccion)}</div>` : ''}
+                        ${o.descripcion ? `<div>${esc(o.descripcion)}</div>` : ''}
+                    </div>
+                    <select data-org="${o.id}">${ESTADOS_ORG.map(e => `<option ${e === o.estado ? 'selected' : ''}>${e}</option>`).join('')}</select>
+                </div>`).join('') : '<p class="meta">Aún no hay organizaciones registradas.</p>';
+
+            $('#mascotas').innerHTML = masc.map(m => `
+                <div class="fila">
+                    ${m.foto ? `<img src="${esc(m.foto)}" alt="">` : '<div class="ph"></div>'}
+                    <div class="info">
+                        <strong>${esc(m.nombre)}</strong> <span class="meta">${esc(m.especie)} · ${esc(m.peso)} · ${esc(m.refugio)}, ${esc(m.ciudad)}</span>
+                        <div class="meta">${m.disponible ? 'Publicada' : 'Oculta'}${m.suspendida ? ' · organización suspendida' : ''}</div>
+                    </div>
+                    <div class="acciones">
+                        <label class="meta"><input type="file" accept="image/jpeg,image/png,image/webp" data-foto="${m.id}" style="max-width:190px"></label>
+                        <button class="sec" data-toggle="${m.id}" data-disp="${m.disponible ? 0 : 1}">${m.disponible ? 'Ocultar' : 'Publicar'}</button>
+                        <button class="sec" data-borrar="${m.id}" data-nombre="${esc(m.nombre)}">Eliminar</button>
+                    </div>
+                </div>`).join('') || '<p class="meta">No hay mascotas.</p>';
+
+            $('#solicitudes').innerHTML = sol.length ? sol.map(s => `
+                <div class="fila">
+                    <div class="info">
+                        <strong>${esc(s.nombre)}</strong> quiere adoptar a <strong>${esc(s.mascota_nombre)}</strong>
+                        <div class="meta">${esc(new Date(s.fecha).toLocaleString('es-CO'))} · ${s.organizacion_nombre ? esc(s.organizacion_nombre) : 'Sin organización'} · <a href="${waLink(s.telefono)}" target="_blank" rel="noopener">${esc(s.telefono)}</a>${s.correo ? ' · ' + esc(s.correo) : ''}</div>
+                        ${s.mensaje ? `<div>${esc(s.mensaje)}</div>` : ''}
+                    </div>
+                    <select data-sol="${s.id}">${ESTADOS.map(e => `<option ${e === s.estado ? 'selected' : ''}>${e}</option>`).join('')}</select>
+                </div>`).join('') : '<p class="meta">Aún no hay solicitudes.</p>';
+        }
+
+        async function entrar() {
+            try {
+                await cargar();
+                sessionStorage.setItem('clave', clave);
+                $('#login').hidden = true; $('#panel').hidden = false;
+            } catch (e) { $('#loginMsg').textContent = e.message === 'No autorizado' ? 'Clave incorrecta' : e.message; }
+        }
+        const accion = async (fn) => {
+            try { $('#panelMsg').textContent = ''; await fn(); await cargar(); }
+            catch (e) { $('#panelMsg').textContent = e.message; }
+        };
+        const patch = (url, cuerpo) => api(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) });
+
+        $('#entrar').onclick = () => { clave = $('#clave').value; entrar(); };
+        $('#clave').addEventListener('keydown', e => { if (e.key === 'Enter') $('#entrar').click(); });
+        $('#salir').onclick = () => { sessionStorage.removeItem('clave'); location.reload(); };
+
+        $('#panel').addEventListener('change', (e) => {
+            const t = e.target;
+            if (t.dataset.org) accion(() => patch('/api/admin/organizaciones/' + t.dataset.org, { estado: t.value }));
+            if (t.dataset.sol) accion(() => patch('/api/admin/solicitudes/' + t.dataset.sol, { estado: t.value }));
+            if (t.dataset.foto && t.files[0]) {
+                const fd = new FormData(); fd.append('foto', t.files[0]);
+                accion(() => api('/api/admin/mascotas/' + t.dataset.foto, { method: 'PUT', body: fd }));
+            }
+        });
+        $('#panel').addEventListener('click', (e) => {
+            const t = e.target.closest('button');
+            if (!t) return;
+            if (t.dataset.toggle) {
+                const fd = new FormData(); fd.append('disponible', t.dataset.disp);
+                accion(() => api('/api/admin/mascotas/' + t.dataset.toggle, { method: 'PUT', body: fd }));
+            }
+            if (t.dataset.borrar && confirm('¿Eliminar a ' + t.dataset.nombre + '? También se borran sus solicitudes.'))
+                accion(() => api('/api/admin/mascotas/' + t.dataset.borrar, { method: 'DELETE' }));
+        });
+
+        if (clave) entrar();
+    </script>
+</body>
+</html>

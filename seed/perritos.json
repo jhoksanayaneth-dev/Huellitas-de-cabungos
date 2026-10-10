@@ -1,0 +1,46 @@
+{
+  "refugio": "Proyecto Tawala y Riocanes",
+  "ubicacion": "Riohacha, La Guajira",
+  "candidatos": [
+    {
+      "id": "01",
+      "nombre": "Luky",
+      "raza": "Criollo mestizo (guajiro), pelaje corto",
+      "peso": "15 - 20 kg (Mediano)",
+      "personalidad": "Uno de los perritos más sociables y famosos del refugio; dócil y se lleva de maravilla con otros perros y personas.",
+      "enlace_busqueda": "https://www.google.com/search?q=Proyecto+Tawala+Riohacha+Luky+adopcion"
+    },
+    {
+      "id": "02",
+      "nombre": "Pole",
+      "raza": "Criollo, complexión atlética compacta",
+      "peso": "16 - 21 kg (Mediano)",
+      "personalidad": "Comportamiento muy estable que busca la paz del hogar; ideal para familias que prefieren un compañero calmado.",
+      "enlace_busqueda": "https://www.google.com/search?q=Proyecto+Tawala+Riohacha+Pole+adopcion"
+    },
+    {
+      "id": "03",
+      "nombre": "Blanquito",
+      "raza": "Criollo de pelaje blanco equilibrado",
+      "peso": "18 - 22 kg (Mediano)",
+      "personalidad": "Sumamente perceptivo y tranquilo; muy leal y espera calmadamente la atención de sus cuidadores.",
+      "enlace_busqueda": "https://www.google.com/search?q=Proyecto+Tawala+Riohacha+Blanquito+adopcion"
+    },
+    {
+      "id": "04",
+      "nombre": "Negrita",
+      "raza": "Criollo de pelaje oscuro y brillante",
+      "peso": "12 - 16 kg (Mediano-Pequeño)",
+      "personalidad": "Muy cariñosa, protectora y adaptable a espacios hogareños. Le encanta recibir caricias y muestra mucha gratitud.",
+      "enlace_busqueda": "https://www.google.com/search?q=Proyecto+Tawala+Riohacha+Negrita+adopcion"
+    },
+    {
+      "id": "05",
+      "nombre": "Toby",
+      "raza": "Criollo juguetón, orejas erguidas",
+      "peso": "14 - 19 kg (Mediano)",
+      "personalidad": "Muy enérgico, alegre y curioso. Ideal para familias activas que disfrutan de paseos al aire libre.",
+      "enlace_busqueda": "https://www.google.com/search?q=Proyecto+Tawala+Riohacha+Toby+adopcion"
+    }
+  ]
+}

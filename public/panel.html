@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Panel para refugios y veterinarias · Huellitas de Cabungos</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; border-radius: 0 !important; }
+        body { background: #FAF9F6; color: #2B2B2B; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; line-height: 1.6; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        header { border-bottom: 2px solid #2B2B2B; padding-bottom: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: end; flex-wrap: wrap; gap: 8px; }
+        h1 { font-size: 1.4rem; font-weight: 800; }
+        h2 { font-size: 1.05rem; margin: 30px 0 12px; text-transform: uppercase; letter-spacing: 1px; }
+        a { color: #D95D39; font-weight: 700; }
+        input, select, textarea { padding: 9px 11px; border: 1px solid #E5E0DA; font: inherit; background: #fff; outline: none; width: 100%; }
+        input:focus, select:focus, textarea:focus { border-color: #D95D39; }
+        label { display: block; font-size: 0.78rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; margin: 0 0 4px; }
+        label.check { display: flex; gap: 8px; text-transform: none; font-weight: 400; letter-spacing: 0; font-size: 0.85rem; align-items: flex-start; }
+        label.check input { width: auto; margin-top: 4px; }
+        button { background: #0D0D0D; color: #fff; border: none; padding: 9px 14px; font: inherit; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; cursor: pointer; }
+        button:hover { background: #D95D39; }
+        button:disabled { opacity: 0.5; cursor: wait; }
+        button.sec { background: #fff; color: #0D0D0D; border: 1px solid #0D0D0D; }
+        button.sec:hover { background: #0D0D0D; color: #fff; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+        .tabs button.activa { background: #D95D39; }
+        .caja { background: #fff; border: 1px solid #E5E0DA; padding: 18px; }
+        .grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+        .grid .ancho { grid-column: 1 / -1; }
+        .fila { background: #fff; border: 1px solid #E5E0DA; padding: 14px; margin-bottom: 10px; display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+        .fila .info { flex: 1 1 240px; }
+        .fila img, .fila .ph { width: 70px; height: 70px; object-fit: cover; background: #F1EDE8; border: 1px solid #E5E0DA; }
+        .meta { font-size: 0.85rem; color: #7A7067; }
+        .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+        .aviso { background: #FFF4D6; border: 1px solid #E8C96B; padding: 12px 14px; margin-bottom: 18px; }
+        .msg { margin-top: 10px; font-size: 0.9rem; }
+        .msg.error { color: #B3261E; }
+        .msg.ok { color: #2E6B3A; }
+        fieldset { border: 1px solid #E5E0DA; padding: 12px; grid-column: 1 / -1; }
+        legend { font-size: 0.78rem; font-weight: 700; text-transform: uppercase; padding: 0 6px; }
+        fieldset .grid { margin-top: 4px; }
+        .nota { font-size: 0.8rem; color: #7A7067; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>PANEL · REFUGIOS Y VETERINARIAS</h1>
+        <a href="/">&larr; Volver al sitio</a>
+    </header>
+
+    <!-- Entrar / Registrarse -->
+    <section id="auth">
+        <div class="tabs">
+            <button type="button" class="activa" data-tab="login">Iniciar sesión</button>
+            <button type="button" class="sec" data-tab="registro">Registrar mi organización</button>
+        </div>
+
+        <form id="formLogin" class="caja grid" style="max-width:420px">
+            <div class="ancho"><label for="lCorreo">Correo</label><input id="lCorreo" type="email" required autocomplete="email"></div>
+            <div class="ancho"><label for="lPass">Contraseña</label><input id="lPass" type="password" required autocomplete="current-password"></div>
+            <div class="ancho"><button type="submit">Entrar</button></div>
+            <p class="msg ancho" id="loginMsg"></p>
+        </form>
+
+        <form id="formRegistro" class="caja grid" hidden>
+            <p class="nota ancho">Revisamos cada organización antes de activar la cuenta. Cuando la aprobemos podrás publicar mascotas.</p>
+            <div><label for="rNombre">Nombre de la organización</label><input id="rNombre" required maxlength="100"></div>
+            <div><label for="rTipo">Tipo</label>
+                <select id="rTipo" required>
+                    <option value="refugio">Refugio</option>
+                    <option value="veterinaria">Veterinaria</option>
+                    <option value="fundacion">Fundación</option>
+                </select></div>
+            <div><label for="rCorreo">Correo</label><input id="rCorreo" type="email" required autocomplete="email"></div>
+            <div><label for="rPass">Contraseña (mínimo 8 caracteres)</label><input id="rPass" type="password" required minlength="8" maxlength="72" autocomplete="new-password"></div>
+            <div><label for="rTel">Teléfono / WhatsApp</label><input id="rTel" type="tel" required minlength="7" maxlength="20"></div>
+            <div><label for="rCiudad">Ciudad</label><input id="rCiudad" required maxlength="80"></div>
+            <div class="ancho"><label for="rDir">Dirección (opcional)</label><input id="rDir" maxlength="200"></div>
+            <div class="ancho"><label for="rDesc">Cuéntanos sobre tu organización (opcional)</label><textarea id="rDesc" rows="2" maxlength="500"></textarea></div>
+            <label class="check ancho"><input type="checkbox" id="rConsent" required> Autorizo el tratamiento de los datos de mi organización y de las personas interesadas en adoptar, para gestionar las adopciones en esta plataforma.</label>
+            <div class="ancho"><button type="submit">Enviar registro</button></div>
+            <p class="msg ancho" id="regMsg"></p>
+        </form>
+    </section>
+
+    <!-- Panel de la organización -->
+    <main id="app" hidden>
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap">
+            <div><strong id="orgNombre"></strong> <span class="meta" id="orgDatos"></span></div>
+            <button type="button" class="sec" id="salir">Cerrar sesión</button>
+        </div>
+        <div class="aviso" id="avisoPendiente" hidden>Tu organización está <strong>en revisión</strong>. Cuando sea aprobada podrás publicar mascotas.</div>
+
+        <section id="seccionForm">
+            <h2 id="tituloForm">Publicar una mascota</h2>
+            <form id="formMascota" class="caja grid">
+                <div><label for="especie">Especie</label>
+                    <select id="especie" name="especie" required>
+                        <option value="perro">Perro</option><option value="gato">Gato</option><option value="otro">Otro</option>
+                    </select></div>
+                <div><label for="nombre">Nombre</label><input id="nombre" name="nombre" required maxlength="80"></div>
+                <div><label for="sexo">Sexo</label>
+                    <select id="sexo" name="sexo" required><option value="macho">Macho</option><option value="hembra">Hembra</option></select></div>
+                <div><label for="edad">Edad</label><input id="edad" name="edad" required maxlength="40" placeholder="Ej. 2 años, 6 meses"></div>
+                <div><label for="raza">Raza</label><input id="raza" name="raza" required maxlength="200" placeholder="Ej. Criollo mestizo"></div>
+                <div><label for="pesoKg">Peso (kg)</label><input id="pesoKg" name="pesoKg" type="number" step="0.1" min="0.1" max="120" required></div>
+                <div class="ancho"><label for="personalidad">Personalidad y características</label>
+                    <textarea id="personalidad" name="personalidad" rows="3" required maxlength="1000" placeholder="Carácter, nivel de energía, cuidados especiales, entrenamiento..."></textarea></div>
+
+                <fieldset><legend>Salud</legend>
+                    <div class="grid">
+                        <div><label for="sano">¿En buen estado de salud?</label><select id="sano" name="sano"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div><label for="vacunasAlDia">¿Vacunas al día?</label><select id="vacunasAlDia" name="vacunasAlDia"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div><label for="esterilizado">¿Esterilizado/a?</label><select id="esterilizado" name="esterilizado"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div><label for="desparasitado">¿Desparasitado/a?</label><select id="desparasitado" name="desparasitado"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div class="ancho"><label for="vacunasDetalle">Detalle de vacunas (opcional)</label><input id="vacunasDetalle" name="vacunasDetalle" maxlength="300" placeholder="Ej. Parvovirus y rabia, última dosis en agosto de 2026"></div>
+                        <div class="ancho"><label for="condicionesSalud">Condiciones de salud o tratamientos (opcional)</label><textarea id="condicionesSalud" name="condicionesSalud" rows="2" maxlength="500"></textarea></div>
+                    </div>
+                </fieldset>
+
+                <fieldset><legend>Convivencia</legend>
+                    <div class="grid">
+                        <div><label for="buenoConNinos">¿Se lleva bien con niños?</label><select id="buenoConNinos" name="buenoConNinos"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div><label for="buenoConPerros">¿Con otros perros?</label><select id="buenoConPerros" name="buenoConPerros"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                        <div><label for="buenoConGatos">¿Con gatos?</label><select id="buenoConGatos" name="buenoConGatos"><option value="">Sin dato</option><option value="si">Sí</option><option value="no">No</option></select></div>
+                    </div>
+                </fieldset>
+
+                <div class="ancho"><label for="requisitos">Requisitos de adopción (uno por línea, máximo 12)</label>
+                    <textarea id="requisitos" name="requisitos" rows="4" required placeholder="Ser mayor de edad&#10;Presentar documento de identidad&#10;Compromiso de esterilizar&#10;Visita al hogar antes de entregar"></textarea></div>
+                <div class="ancho"><label for="foto">Foto (JPG, PNG o WebP, máximo 3 MB)</label><input id="foto" name="foto" type="file" accept="image/jpeg,image/png,image/webp"></div>
+                <div class="ancho acciones">
+                    <button type="submit" id="btnGuardar">Publicar</button>
+                    <button type="button" class="sec" id="btnCancelar" hidden>Cancelar edición</button>
+                </div>
+                <p class="msg ancho" id="formMsg"></p>
+            </form>
+            <p class="nota" style="margin-top:8px">La información de salud y requisitos la declara tu organización y se muestra públicamente. Procura que sea veraz y esté actualizada.</p>
+        </section>
+
+        <h2>Mis mascotas</h2>
+        <div id="mascotas"></div>
+
+        <h2>Solicitudes de adopción</h2>
+        <div id="solicitudes"></div>
+        <p class="msg error" id="appMsg"></p>
+    </main>
+
+    <script>
+        const $ = (s) => document.querySelector(s);
+        const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c =>
+            ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        const ESTADOS = ['pendiente', 'contactado', 'aprobada', 'rechazada'];
+        const TRI = ['sano', 'vacunasAlDia', 'esterilizado', 'desparasitado', 'buenoConNinos', 'buenoConPerros', 'buenoConGatos'];
+        let token = sessionStorage.getItem('orgToken') || '';
+        let org = null, editId = null, mascotas = [];
+
+        async function api(url, opts = {}) {
+            const r = await fetch(url, { ...opts, headers: { ...(opts.headers || {}), ...(token ? { Authorization: 'Bearer ' + token } : {}) } });
+            if (r.status === 204) return null;
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok) { const e = new Error(d.error || 'Error ' + r.status); e.status = r.status; throw e; }
+            return d;
+        }
+        const json = (o) => ({ method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o) });
+        const waLink = (t) => { const d = t.replace(/\D/g, ''); return 'https://wa.me/' + (d.length === 10 ? '57' + d : d); };
+        const setMsg = (el, t, tipo) => { el.textContent = t; el.className = 'msg ' + (tipo || ''); };
+
+        // ----- Entrar / registrarse -----
+        document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => {
+            const login = b.dataset.tab === 'login';
+            $('#formLogin').hidden = !login; $('#formRegistro').hidden = login;
+            document.querySelectorAll('[data-tab]').forEach(x => x.className = x === b ? 'activa' : 'sec');
+        });
+
+        $('#formLogin').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setMsg($('#loginMsg'), 'Entrando...');
+            try {
+                const d = await api('/api/org/login', json({ correo: $('#lCorreo').value, password: $('#lPass').value }));
+                token = d.token; sessionStorage.setItem('orgToken', token);
+                await abrirPanel();
+            } catch (err) { setMsg($('#loginMsg'), err.message, 'error'); }
+        });
+
+        $('#formRegistro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            setMsg($('#regMsg'), 'Enviando...');
+            try {
+                await api('/api/org/registro', json({
+                    nombre: $('#rNombre').value, tipo: $('#rTipo').value, correo: $('#rCorreo').value,
+                    password: $('#rPass').value, telefono: $('#rTel').value, ciudad: $('#rCiudad').value,
+                    direccion: $('#rDir').value, descripcion: $('#rDesc').value, consentimiento: $('#rConsent').checked
+                }));
+                e.target.reset();
+                setMsg($('#regMsg'), 'Registro recibido. Revisaremos tu organización y, cuando la aprobemos, podrás entrar y publicar. Ya puedes iniciar sesión para ver el estado.', 'ok');
+            } catch (err) { setMsg($('#regMsg'), err.message, 'error'); }
+        });
+
+        $('#salir').onclick = () => { sessionStorage.removeItem('orgToken'); location.reload(); };
+
+        // ----- Panel -----
+        async function abrirPanel() {
+            await cargar();
+            $('#auth').hidden = true; $('#app').hidden = false;
+        }
+
+        async function cargar() {
+            try {
+                org = await api('/api/org/yo');
+                $('#orgNombre').textContent = org.nombre;
+                $('#orgDatos').textContent = `· ${org.tipo} · ${org.ciudad}`;
+                const aprobada = org.estado === 'aprobada';
+                $('#avisoPendiente').hidden = aprobada;
+                $('#seccionForm').hidden = !aprobada;
+                const [m, s] = await Promise.all([api('/api/org/mascotas'), api('/api/org/solicitudes')]);
+                mascotas = m;
+                $('#mascotas').innerHTML = m.length ? m.map(x => `
+                    <div class="fila">
+                        ${x.foto ? `<img src="${esc(x.foto)}" alt="">` : '<div class="ph"></div>'}
+                        <div class="info">
+                            <strong>${esc(x.nombre)}</strong> <span class="meta">${esc(x.especie)} · ${esc(x.sexo)} · ${esc(x.peso)}</span>
+                            <div class="meta">${x.disponible ? 'Publicada' : 'Oculta (adoptada o pausada)'}${x.suspendida ? ' · suspendida por el administrador' : ''}</div>
+                        </div>
+                        <div class="acciones">
+                            <button class="sec" data-editar="${x.id}">Editar</button>
+                            <button class="sec" data-toggle="${x.id}" data-disp="${x.disponible ? 0 : 1}">${x.disponible ? 'Marcar adoptada' : 'Volver a publicar'}</button>
+                            <button class="sec" data-borrar="${x.id}" data-nombre="${esc(x.nombre)}">Eliminar</button>
+                        </div>
+                    </div>`).join('') : '<p class="meta">Aún no has publicado mascotas.</p>';
+                $('#solicitudes').innerHTML = s.length ? s.map(x => `
+                    <div class="fila">
+                        <div class="info">
+                            <strong>${esc(x.nombre)}</strong> quiere adoptar a <strong>${esc(x.mascota_nombre)}</strong>
+                            <div class="meta">${esc(new Date(x.fecha).toLocaleString('es-CO'))} · <a href="${waLink(x.telefono)}" target="_blank" rel="noopener">${esc(x.telefono)}</a>${x.correo ? ' · ' + esc(x.correo) : ''}</div>
+                            ${x.mensaje ? `<div>${esc(x.mensaje)}</div>` : ''}
+                        </div>
+                        <select data-sol="${x.id}" style="width:auto">${ESTADOS.map(e => `<option ${e === x.estado ? 'selected' : ''}>${e}</option>`).join('')}</select>
+                    </div>`).join('') : '<p class="meta">Aún no hay solicitudes.</p>';
+            } catch (err) {
+                if (err.status === 401) { sessionStorage.removeItem('orgToken'); token = ''; $('#auth').hidden = false; $('#app').hidden = true; setMsg($('#loginMsg'), err.message, 'error'); }
+                else throw err;
+            }
+        }
+
+        const accion = async (fn) => {
+            try { setMsg($('#appMsg'), ''); await fn(); await cargar(); }
+            catch (e) { setMsg($('#appMsg'), e.message, 'error'); }
+        };
+
+        const form = $('#formMascota');
+        function resetForm() {
+            editId = null; form.reset();
+            $('#tituloForm').textContent = 'Publicar una mascota';
+            $('#btnGuardar').textContent = 'Publicar';
+            $('#btnCancelar').hidden = true;
+        }
+        $('#btnCancelar').onclick = resetForm;
+
+        function editar(m) {
+            editId = m.id;
+            for (const c of ['especie', 'nombre', 'sexo', 'edad', 'raza', 'personalidad', 'vacunasDetalle', 'condicionesSalud'])
+                form.elements[c].value = m[c] ?? '';
+            form.elements.pesoKg.value = m.pesoKg ?? '';
+            for (const c of TRI) form.elements[c].value = m[c] === true ? 'si' : m[c] === false ? 'no' : '';
+            form.elements.requisitos.value = (m.requisitos || []).join('\n');
+            form.elements.foto.value = '';
+            $('#tituloForm').textContent = 'Editar: ' + m.nombre + ' (deja la foto vacía para conservar la actual)';
+            $('#btnGuardar').textContent = 'Guardar cambios';
+            $('#btnCancelar').hidden = false;
+            $('#seccionForm').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = $('#btnGuardar'); btn.disabled = true;
+            setMsg($('#formMsg'), 'Guardando...');
+            try {
+                await api(editId ? '/api/org/mascotas/' + editId : '/api/org/mascotas', { method: editId ? 'PUT' : 'POST', body: new FormData(form) });
+                resetForm();
+                setMsg($('#formMsg'), 'Guardado.', 'ok');
+                await cargar();
+            } catch (err) { setMsg($('#formMsg'), err.message, 'error'); }
+            btn.disabled = false;
+        });
+
+        $('#app').addEventListener('click', (e) => {
+            const t = e.target.closest('button');
+            if (!t) return;
+            if (t.dataset.editar) editar(mascotas.find(m => m.id === t.dataset.editar));
+            if (t.dataset.toggle) {
+                const fd = new FormData(); fd.append('disponible', t.dataset.disp);
+                accion(() => api('/api/org/mascotas/' + t.dataset.toggle, { method: 'PUT', body: fd }));
+            }
+            if (t.dataset.borrar && confirm('¿Eliminar a ' + t.dataset.nombre + '? También se borran sus solicitudes.'))
+                accion(() => api('/api/org/mascotas/' + t.dataset.borrar, { method: 'DELETE' }));
+        });
+        $('#app').addEventListener('change', (e) => {
+            const t = e.target;
+            if (t.dataset.sol) accion(() => api('/api/org/solicitudes/' + t.dataset.sol, {
+                method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ estado: t.value })
+            }));
+        });
+
+        if (token) abrirPanel().catch(() => {});
+    </script>
+</body>
+</html>
